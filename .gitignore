@@ -416,3 +416,17 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Jet Brains
+.idea/
+
+# Docker & Compose Files
+docker-compose.yml
+
+# Ignore log files
+log*.txt
+
+# Ignore Sqlite DB files
+*.db
+*.db-shm
+*.db-wal

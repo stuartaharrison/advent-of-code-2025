@@ -9,6 +9,7 @@ public static class PuzzleFactory {
         day ??= DateTime.Now.Day;
         return day switch {
             1 => new Day1Puzzle(),
+            2 => new Day2Puzzle(),
             _ => throw new ArgumentException($"Unknown day {day}")
         };
     }

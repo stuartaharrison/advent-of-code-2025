@@ -29,7 +29,7 @@ public sealed class Day2Puzzle : IDay2PuzzleSolver {
     
     public void SolvePart2(bool includeSplash = true, bool requiresNewInput = true) {
         if (includeSplash) {
-            LoadSplashScreen(SolutionParts.PartA);
+            LoadSplashScreen(SolutionParts.PartB);
         }
         if (requiresNewInput) {
             PuzzleFilePath =AnsiConsole.Prompt(new TextPrompt<string>("Please enter the Puzzle Input file path").DefaultValue(@"C:\AOC\2025\Day2-B.txt"));

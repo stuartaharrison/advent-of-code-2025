@@ -11,6 +11,7 @@ public static class PuzzleFactory {
             1 => new Day1Puzzle(),
             2 => new Day2Puzzle(),
             3 => new Day3Puzzle(),
+            4 => new Day4Puzzle(),
             _ => throw new ArgumentException($"Unknown day {day}")
         };
     }

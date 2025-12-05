@@ -66,18 +66,35 @@ public sealed class Day5Puzzle : IDay5PuzzleSolver {
     }
 
     public PuzzleBSolution RunSolutionB(PuzzleInput input) {
-        var freshDatabase = new List<long>();
-        foreach (var freshIngredientRange in input.FreshIngredientRanges) {
-            var rangeSplit = freshIngredientRange.Split("-");
-            var rangeLow = long.Parse(rangeSplit[0]);
-            var rangeHigh = long.Parse(rangeSplit[1]);
-            for (var i = rangeLow; i <= rangeHigh; i++) {
-                if (!freshDatabase.Contains(i)) {
-                    freshDatabase.Add(i);
+        // tried to brute force this, took 4-5 hours on the first range, so not efficient enough!
+        // the best method is to do ((y - x) + 1) for each input to get the result - this should be pretty quick math
+        // HOWEVER, some of the inputs might have or be within a previous range
+        // You can see in the example where there is 16-20 and then 12-18 - you would basically need the range to be 12-20
+        // So we need to loop each of these and check the min and max of the range against current ones for an "existing" one and then do a replacement in our final list
+        // We should be able to count/sum the final valid ranges to get the answer
+        var validRanges = new List<InputRange>();
+        foreach (var inputRange in input.GetFreshIngredientRanges()) {
+            var newRange = inputRange; // we can safely assume that the range we have is valid to begin with
+            // NOW lets compare it to previous runs to see if we need to "merge" some of these
+            var outdatedRanges = new List<InputRange>();
+            foreach (var existingValidRange in validRanges) {
+                // similar check to how Part A is solved!
+                if (newRange.Min <= existingValidRange.Max && newRange.Max >= existingValidRange.Min) {
+                    var newMin = Math.Min(newRange.Min, existingValidRange.Min);
+                    var newMax =  Math.Max(newRange.Max, existingValidRange.Max);
+                    newRange = new InputRange(newMin, newMax);
+                    
+                    // we still have to remove the old one here
+                    // oops! Don't be me and try remove from the list that is being iterated from!
+                    outdatedRanges.Add(existingValidRange);
                 }
             }
+            validRanges = validRanges.Except(outdatedRanges).ToList();
+            validRanges.Add(newRange);
         }
-        return new PuzzleBSolution(freshDatabase.Count);
+
+        var freshCount = validRanges.Sum(x => (x.Max - x.Min) + 1);
+        return new PuzzleBSolution(freshCount);
     }
     
     private static PuzzleInput LoadPuzzleInput(string filePath = @"C:\AOC\2025\Day5.txt") {
@@ -100,11 +117,18 @@ public sealed class Day5Puzzle : IDay5PuzzleSolver {
         AnsiConsole.WriteLine();
     }
     
+    public record InputRange(long Min, long Max);
+    
     public class PuzzleInput {
         
         public long[] AvailableIngredients { get; init; } = [];
         
         public string[] FreshIngredientRanges { get; init; } = [];
+
+        public IReadOnlyList<InputRange> GetFreshIngredientRanges() => FreshIngredientRanges.Select(x => {
+            var rangeSplit = x.Split('-');
+            return new InputRange(long.Parse(rangeSplit[0]), long.Parse(rangeSplit[1]));
+        }).ToList();
     }
     
     public class PuzzleASolution(int spoiledCount) {
